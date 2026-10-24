@@ -1,0 +1,584 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>月夜のタロット</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 30px 16px;
+      font-family: "Yu Gothic", sans-serif;
+      color: #f8edda;
+      background:
+        radial-gradient(circle at 50% 10%, #403269 0, transparent 40%),
+        linear-gradient(160deg, #17132e, #241a40 60%, #100e20);
+      text-align: center;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 650px;
+      margin: 0 auto;
+    }
+
+    .moon {
+      font-size: 42px;
+      margin: 10px 0;
+    }
+
+    h1 {
+      margin: 8px 0;
+      color: #e9ca8b;
+      font-family: "Yu Mincho", serif;
+      font-size: clamp(28px, 6vw, 40px);
+      letter-spacing: 0.12em;
+    }
+
+    .subtitle {
+      color: #c6b9db;
+      font-size: 14px;
+      line-height: 1.8;
+      margin-bottom: 28px;
+    }
+
+    .question {
+      padding: 18px;
+      border: 1px solid #6e5a8d;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.04);
+      margin-bottom: 24px;
+    }
+
+    .question label {
+      display: block;
+      margin-bottom: 10px;
+      color: #e9ca8b;
+      font-size: 14px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #76658f;
+      background: #211a38;
+      color: #fff6e5;
+      font-size: 16px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #e9ca8b;
+    }
+
+    .card-area {
+      min-height: 280px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 22px;
+    }
+
+    .card {
+      width: 190px;
+      min-height: 270px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #c7a76a;
+      border-radius: 12px;
+      background: linear-gradient(145deg, #35244f, #19142f);
+      box-shadow: 0 0 25px rgba(194, 156, 91, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 7px;
+      border: 1px solid rgba(231, 203, 143, 0.4);
+      border-radius: 7px;
+      pointer-events: none;
+    }
+
+    .card-back {
+      background:
+        repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 8px,
+          rgba(220, 190, 130, 0.08) 8px,
+          rgba(220, 190, 130, 0.08) 10px
+        ),
+        linear-gradient(145deg, #493267, #201735);
+    }
+
+    .card-back .symbol {
+      color: #e9ca8b;
+      font-size: 76px;
+    }
+
+    .card-back .card-title {
+      color: #e9ca8b;
+      font-family: "Yu Mincho", serif;
+      letter-spacing: 0.18em;
+    }
+
+    .symbol {
+      font-size: 76px;
+      line-height: 1.2;
+      margin-bottom: 12px;
+      filter: drop-shadow(0 0 8px rgba(233, 202, 139, 0.2));
+    }
+
+    .card-number {
+      color: #c6b9db;
+      font-size: 12px;
+      letter-spacing: 0.15em;
+    }
+
+    .card-title {
+      margin-top: 8px;
+      color: #f3dfb5;
+      font-family: "Yu Mincho", serif;
+      font-size: 19px;
+      font-weight: bold;
+    }
+
+    .orientation {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #d8c4ee;
+    }
+
+    .reversed {
+      transform: rotate(180deg);
+    }
+
+    button {
+      width: 100%;
+      max-width: 320px;
+      padding: 15px 20px;
+      border: 1px solid #e9ca8b;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #d8b775, #b18a4e);
+      color: #211630;
+      font-size: 16px;
+      font-weight: bold;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      filter: brightness(1.1);
+      transform: translateY(-2px);
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    button:focus-visible {
+      outline: 2px solid white;
+      outline-offset: 4px;
+    }
+
+    .result {
+      display: none;
+      margin-top: 28px;
+      padding: 24px 20px;
+      text-align: left;
+      border: 1px solid #6e5a8d;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.045);
+      animation: fadeIn 0.6s ease;
+    }
+
+    .result h2 {
+      margin: 0 0 6px;
+      color: #e9ca8b;
+      font-family: "Yu Mincho", serif;
+      font-size: 25px;
+    }
+
+    .result h3 {
+      margin: 22px 0 8px;
+      color: #d8c4ee;
+      font-size: 15px;
+    }
+
+    .result p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 2;
+      white-space: pre-wrap;
+    }
+
+    .result .result-question {
+      color: #c6b9db;
+      font-size: 13px;
+      margin-bottom: 18px;
+    }
+
+    .hint {
+      margin-top: 24px;
+      color: #9e91b8;
+      font-size: 12px;
+      line-height: 1.8;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 400px) {
+      .card {
+        width: 170px;
+        min-height: 245px;
+      }
+
+      .card-area {
+        min-height: 255px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <div class="moon" aria-hidden="true">☾ ✦ ☽</div>
+    <h1>月夜のタロット</h1>
+    <p class="subtitle">
+      心を静かにして、知りたいことを思い浮かべて。<br>
+      あなたへのメッセージをカードから受け取ろう。
+    </p>
+
+    <div class="question">
+      <label for="userQuestion">今、占いたいこと（入力は任意）</label>
+      <input
+        id="userQuestion"
+        type="text"
+        maxlength="100"
+        placeholder="例：恋愛、仕事、これからの自分"
+      >
+    </div>
+
+    <div class="card-area">
+      <div class="card card-back" id="card" aria-live="polite">
+        <div class="symbol">☾</div>
+        <div class="card-title">YOUR TAROT</div>
+        <div class="orientation">カードを引いてね</div>
+      </div>
+    </div>
+
+    <button type="button" id="drawButton">カードを引く ✨</button>
+
+    <section class="result" id="result" aria-live="polite">
+      <p class="result-question" id="resultQuestion"></p>
+      <h2 id="resultTitle"></h2>
+      <p id="resultSubtitle"></p>
+
+      <h3>✦ カードの意味</h3>
+      <p id="meaning"></p>
+
+      <h3>♡ 恋愛運</h3>
+      <p id="love"></p>
+
+      <h3>☀ 今日のアドバイス</h3>
+      <p id="advice"></p>
+    </section>
+
+    <p class="hint">
+      ✧ タロットは未来を確定するものではありません。<br>
+      自分の気持ちを見つめるヒントとして楽しんでね。 ✧
+    </p>
+  </main>
+
+  <script>
+    const cards = [
+      {
+        name: "愚者", symbol: "🌟",
+        meaning: "新しい始まり、自由、可能性。まだ知らない世界へ踏み出すタイミングです。",
+        reversed: "準備不足や無計画に注意。勢いだけで決めず、一度立ち止まってみましょう。",
+        love: "新しい出会いや、関係性の変化に期待できそう。自然体でいることが鍵です。",
+        loveReversed: "相手への期待が先走っていないか確認して。焦らず関係を育てましょう。",
+        advice: "完璧な準備を待たなくても大丈夫。小さな一歩から始めてみて。"
+      },
+      {
+        name: "魔術師", symbol: "🪄",
+        meaning: "創造力、行動力、才能。あなたには状況を動かす力があります。",
+        reversed: "自信不足や準備不足に注意。できることを整理して、力を取り戻しましょう。",
+        love: "自分から素直に話しかけることで、関係が進展する可能性があります。",
+        loveReversed: "言葉だけで判断せず、行動も見て。無理に自分をよく見せなくて大丈夫。",
+        advice: "今あるものを活用して、ひとつ行動に移してみましょう。"
+      },
+      {
+        name: "女教皇", symbol: "🌙",
+        meaning: "直感、知性、冷静さ。静かに考えることで本質が見えてきます。",
+        reversed: "考えすぎや思い込みに注意。感情と事実を分けて整理してみましょう。",
+        love: "相手をよく観察する時期。すぐに結論を出さず、自分の本音にも耳を傾けて。",
+        loveReversed: "不安から相手の気持ちを決めつけていないか、振り返ってみて。",
+        advice: "答えを急がず、心が落ち着く時間をつくりましょう。"
+      },
+      {
+        name: "女帝", symbol: "🌷",
+        meaning: "豊かさ、愛情、実り。自分を大切にすることで幸せが育ちます。",
+        reversed: "尽くしすぎや依存に注意。自分の心も満たすことを忘れずに。",
+        love: "温かい交流が期待できそう。思いやりを、無理のない形で伝えてみて。",
+        loveReversed: "相手に与えるばかりになっていないか確認を。受け取ることも大切です。",
+        advice: "好きなものや心地よい時間を、遠慮せず楽しみましょう。"
+      },
+      {
+        name: "皇帝", symbol: "👑",
+        meaning: "安定、責任、秩序。地に足をつけて行動することが成果につながります。",
+        reversed: "頑固さや支配欲に注意。自分にも相手にも余白を持たせましょう。",
+        love: "誠実な態度が信頼を育てます。言葉だけでなく行動を大切に。",
+        loveReversed: "相手を思い通りにしようとしていないか、自分の希望を整理してみて。",
+        advice: "目標を具体的にして、できることから順番に進めましょう。"
+      },
+      {
+        name: "法王", symbol: "🕊️",
+        meaning: "信頼、学び、伝統。信頼できる人の助言が役立つときです。",
+        reversed: "常識に縛られすぎているかもしれません。自分に合う答えを探して。",
+        love: "誠実な対話が関係を深めます。お互いの価値観を知ることが大切です。",
+        loveReversed: "周囲の理想より、あなたたち自身に合う関係を考えてみましょう。",
+        advice: "経験者の意見を参考にしつつ、最後は自分で選びましょう。"
+      },
+      {
+        name: "恋人", symbol: "💕",
+        meaning: "愛、調和、選択。自分の心に正直な選択が大切です。",
+        reversed: "気持ちのすれ違いや迷いに注意。本当に望むものを見つめてみて。",
+        love: "心が通じ合うチャンス。相手との違いも含めて理解し合いましょう。",
+        loveReversed: "相性だけでなく、価値観や行動が合っているかも確認してみて。",
+        advice: "誰かの期待ではなく、自分が納得できる選択を。"
+      },
+      {
+        name: "戦車", symbol: "🏇",
+        meaning: "前進、意志、勝利。目標を定めて動くことで道が開けます。",
+        reversed: "焦りや空回りに注意。進む方向を見直し、ペースを整えましょう。",
+        love: "勇気を出して一歩進めるとき。相手の意思も尊重しながら行動して。",
+        loveReversed: "自分の気持ちだけで突っ走らず、相手のペースも確かめましょう。",
+        advice: "目標をひとつに絞り、集中して取り組んでみて。"
+      },
+      {
+        name: "力", symbol: "🦁",
+        meaning: "勇気、忍耐、優しさ。強さとは、感情を穏やかに扱う力です。",
+        reversed: "自信を失ったり、感情に振り回されたりしやすいとき。自分を責めないで。",
+        love: "焦らず相手を理解する姿勢が、信頼を育ててくれそうです。",
+        loveReversed: "我慢だけで関係を維持していないか、自分の気持ちも大切に。",
+        advice: "すぐに解決しなくても大丈夫。落ち着いて向き合うことから。"
+      },
+      {
+        name: "隠者", symbol: "🏮",
+        meaning: "内省、探求、知恵。一人で考える時間に大切な気づきがありそうです。",
+        reversed: "孤立や考えすぎに注意。必要なら信頼できる人に相談しましょう。",
+        love: "自分が本当に望む関係を見直すとき。距離を取ることも理解につながります。",
+        loveReversed: "一人で結論を出す前に、相手と話す機会をつくってみて。",
+        advice: "静かな時間を持ち、自分にとって大切なものを書き出してみましょう。"
+      },
+      {
+        name: "運命の輪", symbol: "☸️",
+        meaning: "転機、チャンス、変化。状況が動き始める兆しです。",
+        reversed: "思いどおりに進まないと感じるかも。流れを見て、柔軟に対応しましょう。",
+        love: "思いがけない交流や変化に注目。偶然を楽しみつつ、現実も見て。",
+        loveReversed: "タイミングが合わないときは無理をせず、流れを整えましょう。",
+        advice: "変化を恐れず、訪れた機会を冷静に見極めて。"
+      },
+      {
+        name: "正義", symbol: "⚖️",
+        meaning: "公平、真実、バランス。事実を見つめた判断が求められています。",
+        reversed: "偏った見方や不公平に注意。感情と事実を分けて考えてみて。",
+        love: "対等な関係がテーマ。お互いの希望や境界線を話し合いましょう。",
+        loveReversed: "どちらか一方ばかりが我慢していないか、関係を見直してみて。",
+        advice: "目の前の事実を整理して、納得できる判断をしましょう。"
+      },
+      {
+        name: "吊るされた男", symbol: "🪢",
+        meaning: "忍耐、視点の転換、受容。今は別の角度から見ることが大切です。",
+        reversed: "報われない我慢や停滞に注意。続ける意味があるか考えてみましょう。",
+        love: "すぐに答えを求めず、相手の立場を考えると新しい発見がありそう。",
+        loveReversed: "相手のために自分を犠牲にしすぎていないか確認しましょう。",
+        advice: "行き詰まったら、やり方を変えることも選択肢です。"
+      },
+      {
+        name: "死神", symbol: "🦋",
+        meaning: "終わりと始まり、変容、区切り。古いものを手放して変わるときです。",
+        reversed: "変化を恐れて停滞しているかも。小さなことから切り替えてみましょう。",
+        love: "関係性の節目。過去にこだわらず、今の二人に必要な変化を考えて。",
+        loveReversed: "終わったことを引きずっていないか振り返り、次の一歩を探しましょう。",
+        advice: "終わりは必ずしも悪いことではありません。新しい余白をつくって。"
+      },
+      {
+        name: "節制", symbol: "🍃",
+        meaning: "調和、癒やし、適度なバランス。無理のないペースが幸運を呼びます。",
+        reversed: "偏りや無理が生じているかも。生活や人間関係のバランスを整えて。",
+        love: "違いを受け入れ、歩み寄ることで穏やかな関係を築けそうです。",
+        loveReversed: "合わせすぎにも、譲らなさすぎにも注意。ちょうどよい距離を探して。",
+        advice: "極端な選択を急がず、少しずつ調整していきましょう。"
+      },
+      {
+        name: "悪魔", symbol: "🔥",
+        meaning: "執着、誘惑、束縛。自分を縛っているものに気づくタイミングです。",
+        reversed: "執着から解放される兆し。無理のある習慣を手放す機会です。",
+        love: "強い魅力に惹かれるとき。心地よさだけでなく、関係の健全さも見て。",
+        loveReversed: "依存や不安の連鎖を断ち切るチャンス。自分の時間も大切に。",
+        advice: "やめたいのにやめられないことをひとつ見直してみましょう。"
+      },
+      {
+        name: "塔", symbol: "⚡",
+        meaning: "崩壊、気づき、解放。思い込みが崩れ、新しい見方が生まれることも。",
+        reversed: "変化を先延ばしにしているかも。小さな違和感を放置しないで。",
+        love: "本音に気づく機会。衝動的に決めず、事実を落ち着いて確認しましょう。",
+        loveReversed: "問題を避け続けず、話せる範囲から向き合ってみましょう。",
+        advice: "予想外の出来事があっても、まずは状況を整理することから。"
+      },
+      {
+        name: "星", symbol: "⭐",
+        meaning: "希望、癒やし、可能性。少しずつ未来への明るさが見えてきます。",
+        reversed: "自信を失っているかも。大きな成果より小さな回復を大切に。",
+        love: "素直な気持ちや希望を大切に。自然体で交流することが鍵です。",
+        loveReversed: "理想だけで相手を見ていないか確認を。現実のよさにも目を向けて。",
+        advice: "すぐに結果が出なくても、希望につながる行動を続けてみて。"
+      },
+      {
+        name: "月", symbol: "🌕",
+        meaning: "不安、直感、曖昧さ。見えないものを急いで決めつけないことが大切です。",
+        reversed: "不安の正体が見え始める兆し。事実を確認して整理してみましょう。",
+        love: "相手の気持ちが気になりやすいとき。想像だけで結論を出さず、対話を。",
+        loveReversed: "誤解が解ける可能性も。疑問があるなら落ち着いて確かめましょう。",
+        advice: "不安と現実を分けて書き出すと、心が整理されそうです。"
+      },
+      {
+        name: "太陽", symbol: "☀️",
+        meaning: "喜び、成功、活力。自分らしさを発揮できる明るい兆しです。",
+        reversed: "期待が大きすぎたり、疲れが出たりしているかも。休息も忘れずに。",
+        love: "楽しい時間や率直な会話が関係を明るくしてくれそうです。",
+        loveReversed: "理想を高くしすぎず、今ある幸せや小さな進歩に気づいて。",
+        advice: "好きなことを楽しみ、うれしい気持ちは素直に表現しましょう。"
+      },
+      {
+        name: "審判", symbol: "🔔",
+        meaning: "目覚め、再生、決断。過去を振り返り、次の段階へ進むときです。",
+        reversed: "過去への後悔や決断への迷いがあるかも。自分を責めずに整理して。",
+        love: "関係を見つめ直す機会。過去の出来事より、今後どうしたいかが大切です。",
+        loveReversed: "過去に戻ることだけを目的にせず、今の気持ちを確かめましょう。",
+        advice: "過去から学んだことを、これからの選択に活かしてみて。"
+      },
+      {
+        name: "世界", symbol: "🌍",
+        meaning: "完成、達成、統合。努力が実を結び、ひとつの区切りを迎えそうです。",
+        reversed: "あと一歩のところで停滞しているかも。残っている課題を確認して。",
+        love: "お互いを理解し、関係が深まる可能性。二人にとっての完成形を考えて。",
+        loveReversed: "理想の形にこだわりすぎず、今の関係に必要なことを見つけましょう。",
+        advice: "ここまでの自分を認めて、次の目標をゆっくり考えてみましょう。"
+      },
+      {
+        name: "皇帝", symbol: "🛡️",
+        meaning: "責任、秩序、安定。自分の軸を持つことで安心感が生まれます。",
+        reversed: "頑固さやコントロールに注意。周囲の意見も柔軟に取り入れて。",
+        love: "信頼は一貫した行動から。約束や言葉を大切にしましょう。",
+        loveReversed: "主導権にこだわらず、互いの考えを尊重しましょう。",
+        advice: "目標を決めたら、現実的な計画に落とし込んでみて。"
+      }
+    ];
+
+    // 皇帝が重複しないよう、カードは大アルカナ22枚で構成
+    cards[4] = {
+      name: "皇帝", symbol: "👑",
+      meaning: "安定、責任、秩序。地に足をつけて行動することが成果につながります。",
+      reversed: "頑固さや支配欲に注意。自分にも相手にも余白を持たせましょう。",
+      love: "誠実な態度が信頼を育てます。言葉だけでなく行動を大切に。",
+      loveReversed: "相手を思い通りにしようとしていないか、自分の希望を整理してみて。",
+      advice: "目標を具体的にして、できることから順番に進めましょう。"
+    };
+
+    // 22枚の大アルカナを正しく並べる
+    cards[4] = {
+      name: "皇帝", symbol: "👑",
+      meaning: "安定、責任、秩序。地に足をつけて行動することが成果につながります。",
+      reversed: "頑固さや支配欲に注意。自分にも相手にも余白を持たせましょう。",
+      love: "誠実な態度が信頼を育てます。言葉だけでなく行動を大切に。",
+      loveReversed: "相手を思い通りにしようとしていないか、自分の希望を整理してみて。",
+      advice: "目標を具体的にして、できることから順番に進めましょう。"
+    };
+
+    const cardElement = document.getElementById("card");
+    const resultElement = document.getElementById("result");
+    const drawButton = document.getElementById("drawButton");
+
+    function drawCard() {
+      const question = document.getElementById("userQuestion").value.trim();
+      const card = cards[Math.floor(Math.random() * cards.length)];
+      const isReversed = Math.random() < 0.5;
+      const orientation = isReversed ? "逆位置" : "正位置";
+
+      cardElement.className = "card";
+      cardElement.innerHTML = `
+        <div class="card-number">${isReversed ? "REVERSED" : "UPRIGHT"}</div>
+        <div class="symbol">${card.symbol}</div>
+        <div class="card-title">${card.name}</div>
+        <div class="orientation">${orientation}</div>
+      `;
+
+      if (isReversed) {
+        cardElement.querySelector(".symbol").classList.add("reversed");
+      }
+
+      document.getElementById("resultQuestion").textContent =
+        question ? `あなたの質問：${question}` : "今のあなたへのメッセージ";
+
+      document.getElementById("resultTitle").textContent =
+        `${card.name}（${orientation}）`;
+
+      document.getElementById("resultSubtitle").textContent =
+        isReversed ? "逆位置のカードが示すヒント" : "正位置のカードが示すヒント";
+
+      document.getElementById("meaning").textContent =
+        isReversed ? card.reversed : card.meaning;
+
+      document.getElementById("love").textContent =
+        isReversed ? card.loveReversed : card.love;
+
+      document.getElementById("advice").textContent = card.advice;
+
+      resultElement.style.display = "block";
+      resultElement.style.animation = "none";
+      void resultElement.offsetWidth;
+      resultElement.style.animation = "fadeIn 0.6s ease";
+
+      drawButton.textContent = "もう一度カードを引く ✨";
+
+      resultElement.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+
+    drawButton.addEventListener("click", drawCard);
+  </script>
+</body>
+</html>
