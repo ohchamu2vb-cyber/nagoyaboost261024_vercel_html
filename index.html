@@ -1,11 +1,210 @@
+
 <!DOCTYPE html>
-<html lang="jp">
+<html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello, world!</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>今日のおみくじ</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      font-family: "Yu Gothic", sans-serif;
+      background: linear-gradient(135deg, #f9e7df, #f5d6d1, #f8e9cf);
+      color: #432b2b;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 420px;
+      padding: 35px 25px;
+      text-align: center;
+      background: #fffcf5;
+      border: 2px solid #c88b78;
+      border-radius: 24px;
+      box-shadow: 0 16px 40px rgba(105, 53, 48, 0.15);
+    }
+
+    .eyebrow {
+      color: #a65e54;
+      font-size: 12px;
+      letter-spacing: 0.22em;
+    }
+
+    h1 {
+      font-size: 30px;
+      letter-spacing: 0.08em;
+    }
+
+    .subtitle {
+      color: #8c6b63;
+      font-size: 14px;
+      margin-bottom: 25px;
+    }
+
+    .omikuji {
+      min-height: 210px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      margin-bottom: 25px;
+      border: 1px solid #e2c2a8;
+      border-radius: 16px;
+      background: linear-gradient(180deg, #fffaf0, #fff2df);
+    }
+
+    .seal {
+      font-size: 28px;
+    }
+
+    #result {
+      margin: 10px 0;
+      color: #a63f3f;
+      font-family: "Yu Mincho", serif;
+      font-size: 52px;
+      font-weight: bold;
+      letter-spacing: 0.12em;
+    }
+
+    #message {
+      color: #70554e;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 999px;
+      background: #a94e4a;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 5px 0 #7f3634;
+      transition: 0.15s;
+    }
+
+    button:hover {
+      background: #bd5b54;
+    }
+
+    button:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #7f3634;
+    }
+
+    .note {
+      margin-top: 20px;
+      color: #a1847b;
+      font-size: 11px;
+    }
+
+    .drawn {
+      animation: pop 0.4s ease;
+    }
+
+    @keyframes pop {
+      0% {
+        transform: scale(0.75) rotate(-5deg);
+        opacity: 0.2;
+      }
+      70% {
+        transform: scale(1.08) rotate(2deg);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+  </style>
 </head>
 <body>
-    <h1>Hello, world!</h1>
+  <main class="app">
+    <p class="eyebrow">TODAY'S FORTUNE</p>
+    <h1>今日のおみくじ</h1>
+    <p class="subtitle">運試しに、ひとつ引いてみよう。</p>
+
+    <section class="omikuji" aria-live="polite">
+      <div class="seal" aria-hidden="true">🎋</div>
+      <p id="result">？？？</p>
+      <p id="message">
+        ボタンを押すと、今日の運勢がわかるよ。
+      </p>
+    </section>
+
+    <button id="drawButton" type="button">
+      おみくじを引く ✨
+    </button>
+
+    <p class="note">
+      結果はお楽しみ。よい一日になりますように。
+    </p>
+  </main>
+
+  <script>
+    const fortunes = [
+      {
+        name: "大吉",
+        message: "最高の運気！思い切った一歩が、うれしい結果につながりそう。"
+      },
+      {
+        name: "中吉",
+        message: "いい流れが来ています。焦らず進めば、きっと大丈夫。"
+      },
+      {
+        name: "小吉",
+        message: "小さな幸せに気づける日。身近な人への感謝を忘れずに。"
+      },
+      {
+        name: "吉",
+        message: "いつも通りがいちばん。コツコツ続けることが幸運のカギ。"
+      },
+      {
+        name: "末吉",
+        message: "これから運気が上向く予感。今日は準備の日にしてみよう。"
+      },
+      {
+        name: "凶",
+        message: "無理せず慎重に。休むことも、運を整える大切な一歩。"
+      }
+    ];
+
+    const result = document.getElementById("result");
+    const message = document.getElementById("message");
+    const button = document.getElementById("drawButton");
+
+    button.addEventListener("click", () => {
+      const index = Math.floor(Math.random() * fortunes.length);
+      const fortune = fortunes[index];
+
+      result.classList.remove("drawn");
+      void result.offsetWidth;
+
+      result.textContent = fortune.name;
+      message.textContent = fortune.message;
+
+      result.classList.add("drawn");
+    });
+  </script>
 </body>
 </html>
